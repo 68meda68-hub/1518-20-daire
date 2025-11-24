@@ -447,62 +447,62 @@
   const initialZoom = 0;
 
   const centerCoord = [34.028633, 38.386443];
-  const vatanLabelGeoJSON = {
+  const eskicezaeviLabelGeoJSON = {
     type: "FeatureCollection",
     features: [
       {
         type: "Feature",
         geometry: {
           type: "Point",
-          coordinates: [34.023752, 38.365344]
+          coordinates: [34.027287, 38.389019]
         },
         properties: {
-          title: "Vatan Bilgisayar"
+          title: "Eski Cezaevi"
         }
       }
     ]
   };
-  const akbankLabelGeoJSON = {
+  const valikonagiLabelGeoJSON = {
     type: "FeatureCollection",
     features: [
       {
         type: "Feature",
         geometry: {
           type: "Point",
-          coordinates: [34.020895, 38.363977]
+          coordinates: [34.027786, 38.393921]
         },
         properties: {
-          title: "Halk Bankası"
+          title: "Vali Konağı"
         }
       }
     ]
   };
-  const hasLabelGeoJSON = {
+  const DSILabelGeoJSON = {
     type: "FeatureCollection",
     features: [
       {
         type: "Feature",
         geometry: {
           type: "Point",
-          coordinates: [34.021161, 38.3646]
+          coordinates: [34.026061, 38.392225]
         },
         properties: {
-          title: "Has Döner"
+          title: "DSİ"
         }
       }
     ]
   };
-  const kamberLabelGeoJSON = {
+  const totalpetrolLabelGeoJSON = {
     type: "FeatureCollection",
     features: [
       {
         type: "Feature",
         geometry: {
           type: "Point",
-          coordinates: [34.023349, 38.366125]
+          coordinates: [34.028853, 38.381305]
         },
         properties: {
-          title: "Kamber Gülüzar Demir İlköğretim Okulu"
+          title: "Total Petrol İstasyonu"
         }
       }
     ]
@@ -905,15 +905,15 @@ setTimeout(() => {
     });
 	
 	
-	map.addSource('vatan-label', {
+	map.addSource('eskicezaevi-label', {
       type: 'geojson',
-      data: vatanLabelGeoJSON
+      data: eskicezaeviLabelGeoJSON
     });
 
     map.addLayer({
-      id: 'vatan-label-layer',
+      id: 'eskicezaevi-label-layer',
       type: 'symbol',
-      source: 'vatan-label',
+      source: 'eskicezaevi-label',
       layout: {
         'text-field': ['get', 'title'],
         'text-size': 12,
@@ -930,15 +930,15 @@ setTimeout(() => {
       minzoom: 15 // istersen görünmesi için minimum zoom
     });
 	
-	map.addSource('akbank-label', {
+	map.addSource('valikonagi-label', {
       type: 'geojson',
-      data: akbankLabelGeoJSON
+      data: valikonagiLabelGeoJSON
     });
 
     map.addLayer({
-      id: 'akbank-label-layer',
+      id: 'valikonagi-label-layer',
       type: 'symbol',
-      source: 'akbank-label',
+      source: 'valikonagi-label',
       layout: {
         'text-field': ['get', 'title'],
         'text-size': 12,
@@ -955,15 +955,15 @@ setTimeout(() => {
       minzoom: 15 // istersen görünmesi için minimum zoom
     });
 	
-	map.addSource('has-label', {
+	map.addSource('DSI-label', {
       type: 'geojson',
-      data: hasLabelGeoJSON
+      data: DSILabelGeoJSON
     });
 
     map.addLayer({
-      id: 'has-label-layer',
+      id: 'DSI-label-layer',
       type: 'symbol',
-      source: 'has-label',
+      source: 'DSI-label',
       layout: {
         'text-field': ['get', 'title'],
         'text-size': 12,
@@ -980,14 +980,14 @@ setTimeout(() => {
       minzoom: 15 // istersen görünmesi için minimum zoom
     });
 	
-	map.addSource('kamber-label', {
+	map.addSource('totalpetrol-label', {
       type: 'geojson',
-      data: kamberLabelGeoJSON
+      data: totalpetrolLabelGeoJSON
     });
 	map.addLayer({
-      id: 'kamber-label-layer',
+      id: 'totalpetrol-label-layer',
       type: 'symbol',
-      source: 'kamber-label',
+      source: 'totalpetrol-label',
       layout: {
         'text-field': ['get', 'title'],
         'text-size': 12,
@@ -1038,4 +1038,3 @@ setInterval(updateTime, 1000);
 </script>
 </body>
 </html>
-
