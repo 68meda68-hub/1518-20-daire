@@ -701,12 +701,12 @@ const popup = new mapboxgl.Popup({ offset: [0, -30], closeButton: false, closeOn
       <div class="carousel-items">
 
         <div class="carousel-item active">
-          <img src="images/10.JPG">
+          <img src="images/10.jpg">
           <p class="caption"></p>
         </div>
 
         <div class="carousel-item">
-          <img src="images/12.JPG">
+          <img src="images/12.jpg">
           <p class="caption"></p>
         </div>
 
@@ -732,7 +732,7 @@ const popup = new mapboxgl.Popup({ offset: [0, -30], closeButton: false, closeOn
 
       </div>
 
-      <div class="popup-subtext">KOCAGÖL İNŞAAT GRUP</div>
+      <div class="popup-subtext">KOCAGÖL GRUP İNŞAAT</div>
       <div class="popup-subtext">SATILIK 2+1 LÜKS DAİRELER</div>
 
       <button class="popup-close-btn">×</button>
@@ -851,7 +851,12 @@ setTimeout(() => {
 			  },
 			  paint: {
 				'text-color': '#000000',
-				'text-opacity': 1
+				'text-opacity': 1,
+
+				// ⭐ VURGU EKLİYORUZ
+				'text-halo-color': '#ffffff',   // Beyaz parlama
+				'text-halo-width': 2,           // Kalınlık
+				'text-halo-blur': 0.5           // Hafif yumuşaklık
 			  },
 			  minzoom: 15
 			});
