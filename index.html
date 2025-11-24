@@ -191,10 +191,10 @@
 
 
 /* ----------------------- ANA CONTAINER ----------------------- */
+
 .custom-popup-carousel {
     position: relative;
-    left: 0;                    /* popup artık kaymayacak */
-    transform: translateX(0);   /* sabitle */
+    left: -40px;
     width: 300px;
     text-align: center;
     background: #483c32;
@@ -210,12 +210,12 @@
     box-shadow: 0 10px 22px rgba(0,0,0,0.55);
 }
 
-
 /* ----------------------- SLIDE ALANI ----------------------- */
+
 .carousel-items {
     position: relative;
     width: 100%;
-    height: 180px !important;   /* 🔥 ESKİ ÖLÇÜ */
+    height: 180px;      /* 🔥 Burayı sabit tutacağız */
     border-radius: 8px;
     border-bottom: 2px solid #fff;
     background: #2f2720;
@@ -223,8 +223,8 @@
 }
 
 
-
 /* ----------------------- SLIDE ----------------------- */
+
 .carousel-item {
     position: absolute;
     top: 0;
@@ -242,33 +242,35 @@
     opacity: 1;
 }
 
-
 /* ----------------------- RESİM ----------------------- */
+
 .carousel-item img {
     max-width: 100%;
     max-height: 100%;
     width: auto;
     height: auto;
-    object-fit: contain;          /* 🔥 TAM: hiç kırpma yok */
-    background: #000;             /* boşlukları düzgün gösterir */
+    object-fit: contain;   /* 🔥 Resmi tam gösterir */
     border-radius: 6px;
     box-shadow: 0 0 6px rgba(0,0,0,0.4);
 }
 
 
+
+
 /* ----------------------- VİDEO ----------------------- */
+
 .carousel-item video {
     width: 100%;
     height: 100%;
-    object-fit: cover;            /* 🔥 video alanı doldurur */
+    object-fit: cover;   /* 🔥 Video alanı tamamen doldurur */
     border-radius: 6px;
     background: #000;
     box-shadow: 0 0 6px rgba(0,0,0,0.4);
 }
 
 
-
 /* ----------------------- CAPTION ----------------------- */
+
 .carousel-item .caption {
     position: absolute;
     bottom: -10px;
@@ -285,8 +287,8 @@
     font-weight: 500;
 }
 
-
 /* ----------------------- DOTLAR ----------------------- */
+
 .carousel-dots {
     text-align: center;
     margin-top: 4px;
@@ -307,8 +309,8 @@
     transform: scale(1.2);
 }
 
-
 /* ----------------------- KAPATMA BUTONU ----------------------- */
+
 .popup-close-btn {
     position: absolute;
     left: 5px;
@@ -343,8 +345,8 @@
     }
 }
 
-
 /* ----------------------- VIDEO PLAY OVERLAY ----------------------- */
+
 .video-play-overlay {
     position: absolute;
     left: 50%;
@@ -354,6 +356,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    pointer-events: auto;
 }
 
 .video-play-overlay .play-btn {
@@ -385,12 +388,10 @@
     }
 }
 
-
-/* Video olmayan slaytta overlay gizle */
+/* Eğer slaytta video yoksa overlay gösterme */
 .carousel-item:not(:has(video)) .video-play-overlay {
     display: none !important;
 }
-
 
 
 
@@ -772,27 +773,9 @@ setTimeout(() => {
     let autoSlide = true;
 
     function showSlide(index) {
-    items.forEach((item, i) => item.classList.toggle('active', i === index));
-    dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
-
-    // 🔥 aktif slaytı yenile
-    fixMedia();
-	}
-	function fixMedia() {
-    const active = popup.getElement().querySelector('.carousel-item.active img, .carousel-item.active video');
-    if (!active) return;
-
-    // img ise contain ile tam göster
-    if (active.tagName === 'IMG') {
-        active.style.objectFit = 'contain';
-    } 
-    // video ise dolduracak
-    else {
-        active.style.objectFit = 'cover';
+        items.forEach((item, i) => item.classList.toggle('active', i === index));
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
     }
-}
-
-
 
     showSlide(0);
 
