@@ -187,22 +187,23 @@
 .mapboxgl-popup-tip {
     border-top-color: #483c32 !important; /* popup zemin rengi ile aynı */
 }
-
-
-
-/* ----------------------- ANA CONTAINER ----------------------- */
-
 .custom-popup-carousel {
     position: relative;
-    left: -40px;
+    left: -40px; /* popup gövdesini sola kaydırır */
+}
+
+
+.custom-popup-carousel {
     width: 300px;
     text-align: center;
-    background: #483c32;
+    background: #483c32; /* çerçeve rengi */
     border-radius: 6px;
-    padding: 10px;
+    padding: 10px; /* 🔹 iç kenar boşluğu eklendi */
+    position: relative;
     overflow: hidden;
     box-shadow: 0 6px 18px rgba(0,0,0,0.45);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 1;
 }
 
 .custom-popup-carousel:hover {
@@ -210,20 +211,14 @@
     box-shadow: 0 10px 22px rgba(0,0,0,0.55);
 }
 
-/* ----------------------- SLIDE ALANI ----------------------- */
-
 .carousel-items {
     position: relative;
     width: 100%;
-    height: 180px;      /* 🔥 Burayı sabit tutacağız */
+    height: 180px; /* 🔹 biraz küçülttük (200 → 180) */
     border-radius: 8px;
     border-bottom: 2px solid #fff;
-    background: #2f2720;
-    overflow: hidden;
+    background: #2f2720; /* kenar görünümü için arka plan tonu */
 }
-
-
-/* ----------------------- SLIDE ----------------------- */
 
 .carousel-item {
     position: absolute;
@@ -233,66 +228,58 @@
     height: 100%;
     opacity: 0;
     transition: opacity 0.8s ease-in-out;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .carousel-item.active {
     opacity: 1;
-}
-
-/* ----------------------- RESİM ----------------------- */
+	}
 
 .carousel-item img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;   /* 🔥 Resmi tam gösterir */
+    width: 94%;         /* 🔹 %100 → %94 */
+    height: 94%;        /* 🔹 biraz küçültüldü */
+    object-fit: cover;
     border-radius: 6px;
+    margin-top: 3%;
     box-shadow: 0 0 6px rgba(0,0,0,0.4);
 }
-
-
-
-
-/* ----------------------- VİDEO ----------------------- */
-
-.carousel-item video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;   /* 🔥 Video alanı tamamen doldurur */
-    border-radius: 6px;
-    background: #000;
-    box-shadow: 0 0 6px rgba(0,0,0,0.4);
-}
-
-
-/* ----------------------- CAPTION ----------------------- */
 
 .carousel-item .caption {
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
     max-width: 90%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
     color: #fff;
     text-shadow: 0 0 2.5px #fff;
+    padding: 3px 6px;
     font-size: 13px;
+    background: none;
+    border-radius: 3px;
+    text-align: center;
     font-family: Tahoma, sans-serif;
     font-weight: 500;
 }
 
-/* ----------------------- DOTLAR ----------------------- */
+.popup-subtext {
+    font-family: 'Tahoma';
+    font-size: 10px;
+    color: #fffae0;
+    font-weight: bold;
+    line-height: 1.2; /* biraz daha rahat satır aralığı */
+    margin: 5px 0 0 0;
+	}
+.popup-subtext {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+	}
 
 .carousel-dots {
     text-align: center;
     margin-top: 4px;
-}
+	}
 
 .dot {
     display: inline-block;
@@ -302,52 +289,74 @@
     background-color: rgba(100, 180, 255, 0.35);
     border-radius: 50%;
     transition: all 0.3s ease;
-}
+	}
 
 .dot.active {
     background-color: #64b4ff;
     transform: scale(1.2);
 }
 
-/* ----------------------- KAPATMA BUTONU ----------------------- */
-
+/* Varsayılan masaüstü boyutu */
 .popup-close-btn {
-    position: absolute;
-    left: 5px;
-    bottom: 5px;
-    background: rgba(0,0,0,0.5);
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    width: 12px;
-    height: 12px;
-    font-size: 10px;
-    line-height: 12px;
-    cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    transition: background 0.2s ease;
-    padding: 0;
-    z-index: 50;
-}
+	position: absolute;
+	left: 5px;
+	bottom: 5px;
+	background: rgba(0,0,0,0.5);
+	color: #fff;
+	border: none;
+	border-radius: 50%;
+	width: 12px;
+	height: 12px;
+	font-size: 10px;
+	line-height: 12px;
+	text-align: center;
+	cursor: pointer;
+	box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+	transition: background 0.2s ease;
+	padding: 0;
+	}
 
 .popup-close-btn:hover {
-    background: #e04c4c;
+	background: #e04c4c;
 }
 
-@media (max-width: 414px) {
-    .popup-close-btn {
-        width: 10px;
-        height: 10px;
-        font-size: 8px;
-        line-height: 10px;
-        left: 4px;
-        bottom: 4px;
-    }
+/* Mobil uyumlu: ekran 480px veya daha küçükse butonu küçült */
+@media screen and (max-width: 414px) {
+.popup-close-btn {
+	width: 10px;
+    height: 10px;
+    font-size: 8px;
+    line-height: 10px;
+    left: 4px;
+    bottom: 4px;
+	}
 }
 
-/* ----------------------- VIDEO PLAY OVERLAY ----------------------- */
+/* ------------------ VİDEO & PLAY OVERLAY EKLEMELERİ (MEVCUTI BOZMADAN) ------------------ */
 
-.video-play-overlay {
+/* Video görüntüsü, resimlerle aynı davranacak şekilde ayarlandı */
+.custom-popup-carousel .carousel-item video {
+    width: 94%;               /* mevcut img ile uyumlu */
+    height: 94%;              /* mevcut img ile uyumlu */
+    object-fit: cover;        /* kırparak doldursun */
+    border-radius: 6px;
+    margin-top: 3%;
+    display: block;
+    background: #000;
+    box-shadow: 0 0 6px rgba(0,0,0,0.4);
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* Video öğesinin başlangıçta native kontrolleri görünmeyebilir.
+   Eğer JS ile controls ekliyorsanız bu kural sadece başlangıç stilini korur. */
+.custom-popup-carousel .carousel-item video[controls] {
+    /* controls eklendiğinde, video alanı görünümü bozulmasın diye ekstra bir padding bırakılabilir.
+       Burada herhangi bir zorlayıcı stil yok; ihtiyaca göre ekleyebilirsin. */
+}
+
+/* Video overlay: ortada büyük play düğmesi (mevcut 300px genişlik ile uyumlu) */
+.custom-popup-carousel .video-play-overlay {
     position: absolute;
     left: 50%;
     top: 50%;
@@ -359,12 +368,13 @@
     pointer-events: auto;
 }
 
-.video-play-overlay .play-btn {
-    width: 52px;
+/* Play düğmesi: mevcut popup boyutuna göre makul boyutta */
+.custom-popup-carousel .video-play-overlay .play-btn {
+    width: 52px;             /* orjinal popup küçük olduğu için 64 yerine 52 */
     height: 52px;
     border-radius: 50%;
     border: none;
-    background: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.08); /* hafif açık, çerçeve rengine uyumlu */
     color: #fff;
     font-size: 20px;
     cursor: pointer;
@@ -375,24 +385,62 @@
     backdrop-filter: blur(2px);
 }
 
-.video-play-overlay .play-btn:hover {
+/* Play butonuna hover/aktif efektleri */
+.custom-popup-carousel .video-play-overlay .play-btn:hover {
     transform: scale(1.05);
     background: rgba(255,255,255,0.12);
 }
 
+/* Küçük ekranlarda biraz küçült */
 @media (max-width: 420px) {
-    .video-play-overlay .play-btn {
+    .custom-popup-carousel .video-play-overlay .play-btn {
         width: 46px;
         height: 46px;
         font-size: 18px;
     }
 }
 
-/* Eğer slaytta video yoksa overlay gösterme */
-.carousel-item:not(:has(video)) .video-play-overlay {
+/* Eğer overlay gizlenirse (JS ile display:none yapılıyor) düzgün çalışsın */
+.custom-popup-carousel .video-play-overlay[style*="display:none"] {
+    visibility: hidden;
+}
+
+/* Play overlay'in doğru konumlanması için parent carousel-item'ın position:relative olduğundan emin ol.
+   (JS tarafında parent.style.position = 'relative' set ediliyor, ama güvenlik için CSS desteği) */
+.custom-popup-carousel .carousel-item {
+    /* zaten absolute; overlay için relatif parent gerekiyorsa wrapper eklenebilir
+       Ancak burada fallback olarak overflow:hidden kalsın */
+    overflow: hidden;
+}
+
+/* Video oynarken otomatik slayt geçişini durdurmak istersen (JS'e uyumlu),
+   görsel olarak oynatılıyor hissi verelim: aktif video slaytında overlay gizlenmiş olur. */
+.custom-popup-carousel .carousel-item.active video {
+    /* ekstra stil gerekirse ekle */
+}
+
+/* Kapatma butonunun görünürlüğünü etkilemeden overlay'in üstünde olmasını sağla */
+.custom-popup-carousel .popup-close-btn {
+    z-index: 50; /* play overlay'in altında olmasın diye daha yüksek z */
+}
+
+/* Eğer PDF slide veya diğer öğeler overlay ile çakışıyorsa, overlay sadece video slaytında görünsün
+   (JS tarafında overlay yalnızca video slaytının içine ekleniyor; bu CSS sadece güvenlik) */
+.custom-popup-carousel .carousel-item:not(:has(video)) .video-play-overlay {
     display: none !important;
 }
 
+/* Bazı tarayıcılarda :has() desteklenmeyebilir, fallback için videoParent'e eklenen overlay göstermek en sağlıklısı.
+   Eğer :has() istemezsen bu bloğu silebilirsin. */
+
+/* Son olarak: küçük iyileştirme — video elementinin dokunmatik cihazlarda kolay tıklanması için */
+.custom-popup-carousel .carousel-item video {
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* ------------------ SON ------------------ */
 
 
 
@@ -423,7 +471,6 @@
     transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(0,0,0,0.4);
 }
-
 
 
   </style>
@@ -535,21 +582,16 @@
   });
  
   
-  map.on('zoom', () => {
-    const zoom = map.getZoom();
-    const zoomEl = document.getElementById('zoom-level');
+  const zoomLevelDiv = document.getElementById('zoom-level');
 
-    // Zoom yazısını güncelle
-    zoomEl.textContent = 'Zoom: ' + zoom.toFixed(2);
-
-    // Renk değişimi (istersen)
-    if (zoom >= 17) {
-        zoomEl.style.color = '#ff4444';
-    } else {
-        zoomEl.style.color = '#ffffff';
+    function updateZoomLevel() {
+        const zoom = map.getZoom().toFixed(2);
+        zoomLevelDiv.textContent = `Zoom: ${zoom}`;
     }
-});
 
+    map.on('load', updateZoomLevel);
+    map.on('zoom', updateZoomLevel);
+    map.on('zoomend', updateZoomLevel);
 
   // ⏳ Yükleme ve uçuş süreci
   
