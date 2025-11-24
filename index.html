@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+	  <meta charset="UTF-8" />
+	  <meta name="viewport" content="width=device-width, initial-scale=1" />
+	  <!-- 🔹 Sosyal medya ön izleme meta etiketleri -->
+	  
+  
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+
+
+	<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+	<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+	  
+	  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    body { 
+	margin:0; 
+	padding:0;
+	}
+#map { 
+	position: absolute; 
+    top: 0; 
+    bottom: 0; 
+    width: 100vw; 
+    background: radial-gradient(
+		circle at 50% 50%,
+		rgba(85, 85, 170, 0.8) 0%,    /* merkez: hafif şeffaf parlak mavi-mor */
+		rgba(68, 68, 170, 1) 15%,     /* merkeze yakın koyulaşma */
+		#222244 45%,                   /* orta alan: koyu mavi tonları */
+		#1a1a33 60%,                   /* kenar yakın: derin mavi-mor */
+		#000000 100%                    /* uç: tam siyah */
+	);
+    transition: background-color 5s ease; /* Yumuşak geçiş */
+	}
+
+#loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba (0, 0, 0, 0.5);
+    color: white; 
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    z-index: 9999;
+    white-space: nowrap;
+    opacity: 1;
+    transition: all 2s ease;
+    pointer-events: none;
+    }
+
+#loading.animate {
+    top: calc(100% - 60px);
+    transform: translate(-50%, 0);
+    opacity: 0;
+    }
+
+#loading-bottom {
+    position: fixed;
+    bottom: 42px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: black;
+    color: white;
+    font-size: 11px;
+    padding: 5px 5px;
+    border-radius: 5px;
+    font-weight: bold;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: opacity 2s ease;
+    }
+
+#fade {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 2s;
+    z-index: 998;
+    }
+
+.mapboxgl-popup {
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    }
+
+.custom-popup {
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: "Arial", sans-serif;
+    padding: 5px 5px;
+    background: rgba(0,0,0, 1);
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    text-align: center;
+    white-space: nowrap;
+    line-height: 14px;
+    }
+.popup-subtext {
+    font-size: 11px;
+    color: #fff;
+    font-style: italic;
+    margin-top: 4px;
+    display: block;
+    }
+	
+#zoom-level {
+	display: none;
+    position: absolute;
+    background: rgba (0, 0, 0, 0.5);
+    padding: 5px 8px;
+    margin: 10px;
+    z-index: 1;
+    border-radius: 4px;
+    font-family: Tahoma;  
+	font-size: 10px;
+	color: #fff;	
+	left: 0;
+	bottom: 25px; 
+	transition: color 0.3s ease; /* renk geçişi yumuşak olsun */
+    }	
+@media only screen and (max-width: 414px) {
+#zoom-level {
+    position: absolute;
+    background: white;
+    padding: 3px 3px;
+    margin: 10px;
+    z-index: 1;
+    border-radius: 4px;
+    font-family: Tahoma;  
+	font-size: 9px;	
+	left: 0;
+	bottom: 40px; 
+    }	
+}
+
+
+#current-time {
+    position: absolute;
+    right: 10px;
+    bottom: 42px; /* zoom-level’le aynı duracak */
+    padding: 3px 6px;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    font-family: Tahoma;
+    font-size: 10px;
+    border-radius: 4px;
+    z-index: 1;
+    transition: color 0.3s ease, background 0.3s ease;
+	}
+/* sadece ikon büyüsün */
+#current-time i {
+	font-size: 14px; /* ikon biraz büyük */
+	}
+@media only screen and (max-width: 414px) {
+	#current-time {
+    right: 10px;
+    bottom: 10px; /* zoom-level’le aynı duracak */
+    padding: 3px 6px;
+    font-size: 10px;
+    border-radius: 4px;
+    z-index: 1;
+    transition: color 0.3s ease, background 0.3s ease;
+}}
+
+
+.mapboxgl-popup-content {
+  max-width: none !important;
+  width: 310px !important;
+  padding: 0;
+  background: transparent;
+  border-radius: 6px;
+  box-shadow: none;
+  overflow: visible;
+}
+.mapboxgl-popup-tip {
+    border-top-color: #483c32 !important; /* popup zemin rengi ile aynı */
+}
+
+
+
+/* ----------------------- ANA CONTAINER ----------------------- */
+.custom-popup-carousel {
+    position: relative;
+    left: 0;                    /* popup artık kaymayacak */
+    transform: translateX(0);   /* sabitle */
+    width: 300px;
+    text-align: center;
+    background: #483c32;
+    border-radius: 6px;
+    padding: 10px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.custom-popup-carousel:hover {
+    transform: scale(1.03);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.55);
+}
+
+
+/* ----------------------- SLIDE ALANI ----------------------- */
+.carousel-items {
+    position: relative;
+    width: 100%;
+    height: 180px !important;   /* 🔥 ESKİ ÖLÇÜ */
+    border-radius: 8px;
+    border-bottom: 2px solid #fff;
+    background: #2f2720;
+    overflow: hidden;
+}
+
+
+
+/* ----------------------- SLIDE ----------------------- */
+.carousel-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-item.active {
+    opacity: 1;
+}
+
+
+/* ----------------------- RESİM ----------------------- */
+.carousel-item img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;          /* 🔥 TAM: hiç kırpma yok */
+    background: #000;             /* boşlukları düzgün gösterir */
+    border-radius: 6px;
+    box-shadow: 0 0 6px rgba(0,0,0,0.4);
+}
+
+
+/* ----------------------- VİDEO ----------------------- */
+.carousel-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;            /* 🔥 video alanı doldurur */
+    border-radius: 6px;
+    background: #000;
+    box-shadow: 0 0 6px rgba(0,0,0,0.4);
+}
+
+
+
+/* ----------------------- CAPTION ----------------------- */
+.carousel-item .caption {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+    text-shadow: 0 0 2.5px #fff;
+    font-size: 13px;
+    font-family: Tahoma, sans-serif;
+    font-weight: 500;
+}
+
+
+/* ----------------------- DOTLAR ----------------------- */
+.carousel-dots {
+    text-align: center;
+    margin-top: 4px;
+}
+
+.dot {
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    margin: 0 2px;
+    background-color: rgba(100, 180, 255, 0.35);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background-color: #64b4ff;
+    transform: scale(1.2);
+}
+
+
+/* ----------------------- KAPATMA BUTONU ----------------------- */
+.popup-close-btn {
+    position: absolute;
+    left: 5px;
+    bottom: 5px;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    font-size: 10px;
+    line-height: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    transition: background 0.2s ease;
+    padding: 0;
+    z-index: 50;
+}
+
+.popup-close-btn:hover {
+    background: #e04c4c;
+}
+
+@media (max-width: 414px) {
+    .popup-close-btn {
+        width: 10px;
+        height: 10px;
+        font-size: 8px;
+        line-height: 10px;
+        left: 4px;
+        bottom: 4px;
+    }
+}
+
+
+/* ----------------------- VIDEO PLAY OVERLAY ----------------------- */
+.video-play-overlay {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-play-overlay .play-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+    backdrop-filter: blur(2px);
+}
+
+.video-play-overlay .play-btn:hover {
+    transform: scale(1.05);
+    background: rgba(255,255,255,0.12);
+}
+
+@media (max-width: 420px) {
+    .video-play-overlay .play-btn {
+        width: 46px;
+        height: 46px;
+        font-size: 18px;
+    }
+}
+
+
+/* Video olmayan slaytta overlay gizle */
+.carousel-item:not(:has(video)) .video-play-overlay {
+    display: none !important;
+}
+
+
+
+
+
+
+
+.pdf-box {
+    display: flex;
+    justify-content: center; /* yatay ortala */
+    align-items: center;     /* dikey ortala (isteğe bağlı) */
+    height: 100%;            /* slaytın tamamını kapsasın */
+    margin-top: 5px;
+}
+
+.pdf-button {
+    display: inline-block;
+    background-color: #e63946; /* kırmızı, dikkat çekici */
+    color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.pdf-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+}
+
+
+
+  </style>
+</head>
+<body>
+
+	<div id="loading"><sup><i>en </i></sup>NET<i> max</i> GAYRİMENKUL</div>
+	<div id="loading-bottom"><sup><i>en </i></sup>NET<i> max</i> GAYRİMENKUL</div>
+	<div id="fade"></div>
+
+	<div id="map"></div>
+
+	<div id="zoom-level">Zoom: --</div>
+	<div id="current-time"><i class="fa-solid fa-clock"></i> --:--:--</div>
+
+
+<script>
+  mapboxgl.accessToken = 'pk.eyJ1IjoiZ2VvZ3JhcGh5cHJvZiIsImEiOiJjanYxb2t1ZG8wNGU1NGFsNXVkcnhzNmFpIn0.M3qCJK8FYa06B-Irc6FD-g';
+
+  const initialCenter = [0, 0];
+  const initialZoom = 0;
+
+  const centerCoord = [34.028633, 38.386443];
+  const vatanLabelGeoJSON = {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [34.023752, 38.365344]
+        },
+        properties: {
+          title: "Vatan Bilgisayar"
+        }
+      }
+    ]
+  };
+  const akbankLabelGeoJSON = {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [34.020895, 38.363977]
+        },
+        properties: {
+          title: "Halk Bankası"
+        }
+      }
+    ]
+  };
+  const hasLabelGeoJSON = {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [34.021161, 38.3646]
+        },
+        properties: {
+          title: "Has Döner"
+        }
+      }
+    ]
+  };
+  const kamberLabelGeoJSON = {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [34.023349, 38.366125]
+        },
+        properties: {
+          title: "Kamber Gülüzar Demir İlköğretim Okulu"
+        }
+      }
+    ]
+  };
+ 
+
+  const geojsonData = {
+"type": "FeatureCollection",
+"name": "1518_20",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "OBJECTID": 21, "ILCE": "Merkez", "MAHALLE": "Şifahane", "PARSEL_NO": "1518/20", "DEGERI": null, "ACIKLAMA": null, "ALAN": 667.91 }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 34.028474246382892, 38.386532429904385 ], [ 34.028845834078986, 38.386513263476594 ], [ 34.028802487012882, 38.386328845213853 ], [ 34.028431609455872, 38.386350638573361 ], [ 34.028474246382892, 38.386532429904385 ] ] ] ] } }
+]
+};
+
+  let markerAdded = false;
+  let rotating = false;
+
+  const map = new mapboxgl.Map({
+    container: 'map',
+		style: {
+			version: 8,
+			sources: {},
+			layers: [],
+			glyphs: 'https://api.mapbox.com/fonts/v1/mapbox/{fontstack}/{range}.pbf?access_token=' + mapboxgl.accessToken
+    },
+    center: [0, 0],
+    zoom: 0.5,
+	projection: 'globe'
+  });
+ 
+  
+  map.on('zoom', () => {
+    const zoom = map.getZoom();
+    const zoomEl = document.getElementById('zoom-level');
+
+    // Zoom yazısını güncelle
+    zoomEl.textContent = 'Zoom: ' + zoom.toFixed(2);
+
+    // Renk değişimi (istersen)
+    if (zoom >= 17) {
+        zoomEl.style.color = '#ff4444';
+    } else {
+        zoomEl.style.color = '#ffffff';
+    }
+});
+
+
+  // ⏳ Yükleme ve uçuş süreci
+  
+
+  map.on('load', () => {
+  
+	// 🌍 Küre dönüş animasyonu
+  let rotating = true;
+  let rotateFrame;
+
+  function rotateGlobe() {
+    if (!rotating) return;
+    const speed = 0.2;
+    const center = map.getCenter();
+    let newLng = center.lng + speed;
+    if (newLng > 180) newLng -= 360;
+    map.jumpTo({ center: [newLng, center.lat] });
+    rotateFrame = requestAnimationFrame(rotateGlobe);
+  }
+
+  rotateGlobe();
+ 
+// ⏳ Yükleme ve uçuş süreci
+  setTimeout(() => {
+    const loading = document.getElementById('loading');
+    const loadingBottom = document.getElementById('loading-bottom');
+
+    loading.classList.add('animate');
+
+    setTimeout(() => {
+      cancelAnimationFrame(rotateFrame);
+      rotating = false;
+
+      loading.style.display = 'none';
+      loadingBottom.style.opacity = '1';
+
+      map.once('idle', () => {
+        map.flyTo({
+          center: centerCoord,
+          zoom: 17,
+          speed: 0.3,
+          curve: 1.5,
+          essential: true
+        });
+      });
+
+    }, 2000);
+  }, 3000); 
+  
+  
+    map.addSource('parcels', {
+      type: 'geojson',
+      data: geojsonData
+    });
+map.addSource('google-satellite', {
+      type: 'raster',
+      tiles: ['https://mt1.google.com/vt/lyrs=s,traffic&x={x}&y={y}&z={z}'],
+      tileSize: 256
+    });
+
+    map.addLayer({
+      id: 'google-satellite-layer',
+      type: 'raster',
+      source: 'google-satellite',
+      layout: { visibility: 'visible' }
+    });
+    // Dolgu katmanı
+    map.addLayer({
+      id: 'parcels-layer',
+      type: 'fill',
+      source: 'parcels',
+      paint: {
+        'fill-color': '#ffff00',
+        'fill-opacity': 0.7
+      },
+      minzoom: 15
+    });
+
+    // Çizgi katmanı
+    map.addLayer({
+      id: 'parcels-outline',
+      type: 'line',
+      source: 'parcels',
+      paint: {
+        'line-color': '#0000ff',
+        'line-width': 1,
+		'line-opacity': 0.4
+      },
+      minzoom: 15
+    });
+	
+	
+	
+	// 1️⃣ Yeni kaynak ekliyoruz
+//map.addSource('manual-label', {
+//  type: 'geojson',
+//  data: {
+//    type: 'FeatureCollection',
+//    features: [
+//      {
+//        type: 'Feature',
+//        geometry: {
+//          type: 'Point',
+//          coordinates: [ 34.024425, 38.363137] // [lng, lat] şeklinde dikkat
+//        }
+//      }
+//    ]
+// }
+//});
+
+// 2️⃣ Layer ekliyoruz
+//map.addLayer({
+//  id: 'manual-label-layer',
+//  type: 'symbol',
+//  source: 'manual-label',
+//  layout: {
+//    'text-field': 'Satılık  2+1\nLüks Daireler', 
+//    'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+//    'text-size': 12,
+//    'text-anchor': 'center',
+//    'text-allow-overlap': true
+//  },
+//  paint: {
+//    'text-color': '#FFD700', // sarı yazı
+//    'text-halo-color': '#000000', // siyah halo, okunabilirlik için
+//    'text-halo-width': 1.5
+//  },
+//  minzoom: 17
+//});	
+
+    // Zoom 0'dan 17'ye uçuş yerine, yukarıdaki animasyon sonrası uçuyoruz, bu yüzden burada yapmıyoruz
+
+    map.on('moveend', () => {
+      const zoom = map.getZoom();
+
+      if (zoom >= 17 && !markerAdded) {
+        markerAdded = true;
+
+		setTimeout(() => {
+        new mapboxgl.Marker({color: 'orange', scale: 0.9})
+          .setLngLat(centerCoord)
+          .addTo(map);
+		}, 10000);
+        // Slider popup
+const popup = new mapboxgl.Popup({ offset: [0, -30], closeButton: false, closeOnClick: false })
+  .setLngLat(centerCoord)
+  .setHTML(`
+    <div class="custom-popup-carousel">
+      <div class="carousel-items">
+
+        <div class="carousel-item active">
+          <img src="images/10.jpg">
+          <p class="caption"></p>
+        </div>
+
+        <div class="carousel-item">
+          <img src="images/12.jpg">
+          <p class="caption"></p>
+        </div>
+
+
+        <!-- ▶️ TANITIM VİDEOSU SLIDE -->
+        <div class="carousel-item">
+            <video src="images/video1.mp4"></video>
+            <div class="video-play-overlay">
+                <button class="play-btn">▶</button>
+            </div>
+            <p class="caption">Tanıtım Videosu</p>
+        </div>
+		<div class="carousel-item">
+            <video src="images/video2.mp4"></video>
+            <div class="video-play-overlay">
+                <button class="play-btn">▶</button>
+            </div>
+            <p class="caption">Tanıtım Videosu</p>
+        </div>
+
+        <!-- 📄 PDF LINK SLIDE -->
+       
+
+      </div>
+
+      <div class="popup-subtext">KOCAGÖL İNŞAAT GRUP</div>
+      <div class="popup-subtext">SATILIK 2+1 LÜKS DAİRELER</div>
+
+      <button class="popup-close-btn">×</button>
+
+      <div class="carousel-dots">
+		<span class="dot active"></span>
+		<span class="dot"></span>
+		<span class="dot"></span>
+		<span class="dot"></span>
+	  </div>
+
+  `)
+  .addTo(map);
+
+
+// -------------------------
+//  JS DEVAM — CAROUSEL + VİDEO KONTROL
+// -------------------------
+
+requestAnimationFrame(() => {
+    const closeBtn = popup.getElement().querySelector('.popup-close-btn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => popup.remove());
+    }
+});
+
+setTimeout(() => {
+    const popupEl = popup.getElement();
+    if (!popupEl) return;
+
+    const items = popupEl.querySelectorAll('.carousel-item');
+    const dots = popupEl.querySelectorAll('.carousel-dots .dot');
+
+    // ✔ SADECE VİDEO İÇEREN SLIDE’LARI BUL
+    const videoSlides = [...items].filter(item => item.querySelector("video"));
+
+    let current = 0;
+    let autoSlide = true;
+
+    function showSlide(index) {
+    items.forEach((item, i) => item.classList.toggle('active', i === index));
+    dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+
+    // 🔥 aktif slaytı yenile
+    fixMedia();
+	}
+	function fixMedia() {
+    const active = popup.getElement().querySelector('.carousel-item.active img, .carousel-item.active video');
+    if (!active) return;
+
+    // img ise contain ile tam göster
+    if (active.tagName === 'IMG') {
+        active.style.objectFit = 'contain';
+    } 
+    // video ise dolduracak
+    else {
+        active.style.objectFit = 'cover';
+    }
+}
+
+
+
+    showSlide(0);
+
+    // ⏳ AUTOSLIDE
+    const interval = setInterval(() => {
+        if (!autoSlide) return;
+        current = (current + 1) % items.length;
+        showSlide(current);
+    }, 5000);
+
+    // ----------------------------------------------------
+    // ▶ TÜM VİDEO SLIDE’LARINI DOĞRU ŞEKİLDE İŞLE
+    // ----------------------------------------------------
+    videoSlides.forEach((slide) => {
+
+        const video = slide.querySelector("video");
+        const overlay = slide.querySelector(".video-play-overlay");
+        const btn = slide.querySelector(".play-btn");
+
+        if (!video || !overlay || !btn) return;
+
+        // ▶ Play'e basınca
+        btn.addEventListener("click", () => {
+            autoSlide = false;
+            overlay.style.display = "none";
+            video.setAttribute("controls", "true");
+            video.play();
+        });
+
+        // ⏹ Video durunca
+        video.addEventListener("ended", () => {
+            video.removeAttribute("controls");
+            overlay.style.display = "flex";
+
+            setTimeout(() => {
+                autoSlide = true;
+            }, 800);
+        });
+    });
+
+    // Popup kapanınca interval temizle
+    popupEl.closest('.mapboxgl-popup').addEventListener('remove', () => {
+        clearInterval(interval);
+    });
+
+}, 200);
+
+
+
+
+	 
+        setTimeout(() => {
+          const popupEl = popup.getElement();
+          if (popupEl) popupEl.style.opacity = '1';
+        }, 5000);
+
+        if (!map.getLayer('parcels-labels')) {
+          map.addLayer({
+			  id: 'parcels-labels',
+			  type: 'symbol',
+			  source: 'parcels',
+			  layout: {
+				'text-field': [
+				  'concat',
+				  ['to-string', ['get', 'MAHALLE']], // MAHALLE'yi al
+				  ' ', // Buraya boşluk ekliyoruz
+				  'Mahallesinde' // 'Mahallesinde' ifadesi
+				],
+				'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+				'text-size': 10,
+				'text-anchor': 'center',
+				'text-allow-overlap': true
+			  },
+			  paint: {
+				'text-color': '#000000',
+				'text-opacity': 1
+			  },
+			  minzoom: 15
+			});
+
+        }
+
+        setTimeout(() => {
+          if (map.getLayer('parcels-labels')) {
+            map.removeLayer('parcels-labels', 'manual-label-layer');
+          }
+        }, 9000);
+
+        setTimeout(() => {
+          map.flyTo({
+            zoom: 15,
+            pitch: 45,
+            speed: 0.1,
+            curve: 1.8,
+            essential: true
+          });
+        }, 10000);
+      }
+
+      if (Math.round(zoom) === 15 && !rotating) {
+        rotating = true;
+
+        let startBearing = map.getBearing();
+        const duration = 30000;
+        let startTime;
+
+        function rotate(timestamp) {
+          if (!startTime) startTime = timestamp;
+          const elapsed = timestamp - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const currentBearing = startBearing + progress * 360;
+
+          map.setBearing(currentBearing);
+
+          if (progress < 1) {
+            requestAnimationFrame(rotate);
+          }
+        }
+
+        setTimeout(() => requestAnimationFrame(rotate), 1000);
+      }
+    });
+	
+	
+	map.addSource('vatan-label', {
+      type: 'geojson',
+      data: vatanLabelGeoJSON
+    });
+
+    map.addLayer({
+      id: 'vatan-label-layer',
+      type: 'symbol',
+      source: 'vatan-label',
+      layout: {
+        'text-field': ['get', 'title'],
+        'text-size': 12,
+        'text-offset': [0, 0.6],
+        'text-anchor': 'top',
+        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+        'text-allow-overlap': true
+      },
+      paint: {
+        'text-color': '#ffffff',
+        'text-halo-color': '#0000ff',
+        'text-halo-width': 1
+      },
+      minzoom: 15 // istersen görünmesi için minimum zoom
+    });
+	
+	map.addSource('akbank-label', {
+      type: 'geojson',
+      data: akbankLabelGeoJSON
+    });
+
+    map.addLayer({
+      id: 'akbank-label-layer',
+      type: 'symbol',
+      source: 'akbank-label',
+      layout: {
+        'text-field': ['get', 'title'],
+        'text-size': 12,
+        'text-offset': [0, 0.6],
+        'text-anchor': 'top',
+        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+        'text-allow-overlap': true
+      },
+      paint: {
+        'text-color': '#ffffff',
+        'text-halo-color': '#0000ff',
+        'text-halo-width': 1
+      },
+      minzoom: 15 // istersen görünmesi için minimum zoom
+    });
+	
+	map.addSource('has-label', {
+      type: 'geojson',
+      data: hasLabelGeoJSON
+    });
+
+    map.addLayer({
+      id: 'has-label-layer',
+      type: 'symbol',
+      source: 'has-label',
+      layout: {
+        'text-field': ['get', 'title'],
+        'text-size': 12,
+        'text-offset': [0, 0.6],
+        'text-anchor': 'top',
+        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+        'text-allow-overlap': true
+      },
+      paint: {
+        'text-color': '#ffffff',
+        'text-halo-color': '#0000ff',
+        'text-halo-width': 1
+      },
+      minzoom: 15 // istersen görünmesi için minimum zoom
+    });
+	
+	map.addSource('kamber-label', {
+      type: 'geojson',
+      data: kamberLabelGeoJSON
+    });
+	map.addLayer({
+      id: 'kamber-label-layer',
+      type: 'symbol',
+      source: 'kamber-label',
+      layout: {
+        'text-field': ['get', 'title'],
+        'text-size': 12,
+        'text-offset': [0, 0.6],
+        'text-anchor': 'top',
+        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+        'text-allow-overlap': true
+      },
+      paint: {
+        'text-color': '#ffffff',
+        'text-halo-color': '#0000ff',
+        'text-halo-width': 1
+      },
+      minzoom: 15 // istersen görünmesi için minimum zoom
+    });
+
+map.on('zoom', () => {
+    const zoomLevel = map.getZoom();
+    const zoomEl = document.getElementById('zoom-level');
+    
+    zoomEl.textContent = `Zoom: ${zoomLevel.toFixed(1)}`;
+
+    if (zoomLevel >= 17) {
+        zoomEl.style.color = '#000';
+        zoomEl.style.background = 'rgba(255,255,255,1)'; // beyaz arka plan
+    } else {
+        zoomEl.style.color = '#fff';
+        zoomEl.style.background = 'rgba(0,0,0,0.5)'; // siyah arka plan
+    }
+});
+
+function updateTime() {
+  const now = new Date();
+  const timeString = now.toLocaleTimeString('tr-TR');
+  document.getElementById('current-time').innerHTML = `<i class="fa-solid fa-clock"></i> ${timeString}`;
+}
+
+setInterval(updateTime, 1000);
+updateTime();
+
+
+// Başlangıçta hemen güncelle
+updateTime();
+// Her saniye tekrar
+setInterval(updateTime, 1000);
+	
+  });
+</script>
+</body>
+</html>
